@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- BASE:START (managed by Coding Agent — do not edit) -->
+<base href="/joe-s-pizza-homepage-v2/">
+<!-- BASE:END -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+
+<!-- SEO Meta Tags -->
+<title>Joe's Pizza | Best Pizza in Whitesboro, NY</title>
+<meta name="description" content="Joe" />
+<meta property="og:title" content="Joe's Pizza | Best Pizza in Whitesboro, NY" />
+<meta property="og:description" content="Joe" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Joe's Pizza | Best Pizza in Whitesboro, NY" />
+<meta name="twitter:description" content="Joe" />
+<!-- End SEO Meta Tags -->
+
+
+<script data-field-replace>
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var fields={};
+  var paramMap={
+    'first_name':'firstName','last_name':'lastName','full_name':'fullName',
+    'email':'email','phone':'phone','company':'company',
+    'city':'city','state':'state','country':'country'
+  };
+  var skipTags={'SCRIPT':1,'STYLE':1,'NOSCRIPT':1,'TEXTAREA':1,'CODE':1,'PRE':1};
+  var hasUrlFields=false;
+  for(var p in paramMap){
+    var v=params.get(p);
+    if(v){fields[paramMap[p]]=v;hasUrlFields=true;}
+  }
+  var contactId=params.get('contact_id');
+  function esc(s){
+    if(!s)return s;
+    var d=document.createElement('div');
+    d.appendChild(document.createTextNode(s));
+    return d.innerHTML;
+  }
+  function doReplace(data){
+    var r={};
+    r['{{full_name}}']=esc(((data.firstName||'')+' '+(data.lastName||'')).trim()||((data.fullName||data.name)||''));
+    r['{{first_name}}']=esc(data.firstName||(data.name?data.name.split(' ')[0]:'')||'');
+    r['{{last_name}}']=esc(data.lastName||(data.name&&data.name.indexOf(' ')>-1?data.name.substring(data.name.indexOf(' ')+1):'')||'');
+    r['{{email}}']=esc(data.email||'');
+    r['{{phone}}']=esc(data.phone||'');
+    r['{{company}}']=esc(data.company||'');
+    r['{{city}}']=esc(data.city||'');
+    r['{{state}}']=esc(data.state||'');
+    r['{{country}}']=esc(data.country||'');
+    r['{{date}}']=new Date().toLocaleDateString();
+    r['{{time}}']=new Date().toLocaleTimeString();
+    r['{{location}}']=[data.city,data.state,data.country].filter(Boolean).join(', ');
+    r['{{tracking_id}}']=esc(data.trackingId||'');
+    r['{{lastClickedProduct}}']=esc(data.lastClickedProduct||'');
+    r['{{lastProductClickDate}}']=esc(data.lastProductClickDate||'');
+    r['{{lastClickedProductPrice}}']=esc(data.lastClickedProductPrice||'');
+    r['{{lastClickedProductURL}}']=esc(data.lastClickedProductURL||'');
+    r['{{productsClickedCount}}']=esc(data.productsClickedCount||'0');
+    r['{{ip_address}}']=esc(data.ipAddress||'');
+    r['{{ip}}']=esc(data.ipAddress||'');
+    if(data.customFields){
+      for(var k in data.customFields){
+        r['{{'+k+'}}']=esc(String(data.customFields[k]||''));
+      }
+    }
+    params.forEach(function(v,k){
+      if(!paramMap[k]&&k!=='contact_id'&&k!=='page_id'&&k.indexOf('utm_')!==0){
+        r['{{'+k+'}}']=esc(v);
+      }
+    });
+    var hasValues=false;
+    for(var key in r){if(r[key]){hasValues=true;break;}}
+    if(!hasValues)return;
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
+      acceptNode:function(n){
+        var p=n.parentNode;
+        if(p&&skipTags[p.nodeName])return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var node;
+    while(node=walker.nextNode()){
+      var txt=node.nodeValue;
+      if(txt&&txt.indexOf('{{')>-1){
+        var changed=txt;
+        for(var ph in r){
+          if(r[ph]&&changed.indexOf(ph)>-1){
+            changed=changed.split(ph).join(r[ph]);
+          }
+        }
+        if(changed!==txt)node.nodeValue=changed;
+      }
+    }
+    var attrs=['value','placeholder','content','alt','title'];
+    attrs.forEach(function(attr){
+      var els=document.querySelectorAll('['+attr+'*="{{"]');
+      for(var i=0;i<els.length;i++){
+        var tag=els[i].tagName;
+        if(skipTags[tag])continue;
+        var val=els[i].getAttribute(attr);
+        if(val){
+          var nv=val;
+          for(var ph in r){
+            if(r[ph]&&nv.indexOf(ph)>-1){
+              nv=nv.split(ph).join(r[ph]);
+            }
+          }
+          if(nv!==val)els[i].setAttribute(attr,nv);
+        }
+      }
+    });
+  }
+  function run(){
+    if(contactId){
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET','https://paymegpt.com/api/landing/context/'+encodeURIComponent(contactId)+'?page_id=4211');
+      xhr.onload=function(){
+        if(xhr.status===200){
+          try{
+            var resp=JSON.parse(xhr.responseText);
+            if(resp.success&&resp.contact){
+              var merged=resp.contact;
+              for(var k in fields){merged[k]=fields[k];}
+              doReplace(merged);
+              return;
+            }
+          }catch(e){}
+        }
+        if(hasUrlFields)doReplace(fields);
+      };
+      xhr.onerror=function(){if(hasUrlFields)doReplace(fields);};
+      xhr.send();
+    }else if(hasUrlFields){
+      doReplace(fields);
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',run);}
+  else{run();}
+})();
+</script>
+<script data-payment>
+(function(){
+  var slug='h7QTELZ';
+  var apiBase='https://paymegpt.com';
+  var successSubtext='';var successBtnLabel='Continue';var successBtnColor='#16a34a';var successRedirect='';
+  function findEmail(){
+    var ids=['email','emailAddress','buyer-email','buyerEmail','user-email','userEmail','checkout-email','customer-email','contact-email'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.includes('@'))return el.value.trim();}
+    var inputs=document.querySelectorAll('input[type="email"],input[name*="email"],input[placeholder*="email"],input[placeholder*="Email"]');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.includes('@'))return inputs[j].value.trim();}
+    return '';
+  }
+  function findName(){
+    var ids=['name','fullName','full-name','buyer-name','buyerName','customer-name','userName','user-name'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value)return el.value.trim();}
+    var inputs=document.querySelectorAll('input[name*="name"]:not([name*="email"]):not([type="email"]),input[placeholder*="name"]:not([placeholder*="email"]):not([type="email"]),input[placeholder*="Name"]:not([type="email"])');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value)return inputs[j].value.trim();}
+    return '';
+  }
+  var __realProcessPayment=function(a,b,c,d,e){
+    var amountCents,email,productName,productDescription,customerName,quantity;
+    if(a&&typeof a==='object'){
+      amountCents=a.amountCents;email=a.email;productName=a.productName;
+      productDescription=a.productDescription||'';customerName=a.name||'';quantity=a.quantity||1;
+    }else{
+      amountCents=typeof a==='number'?a:0;productName=typeof b==='string'?b:'';
+      productDescription=typeof c==='string'?c:'';email='';customerName='';quantity=1;
+    }
+    if(!email)email=findEmail();
+    if(!customerName)customerName=findName();
+    if(!productName){alert('Product name is required.');return Promise.reject('no_product_name');}
+    if(!amountCents||amountCents<100){alert('Amount must be at least $1.00');return Promise.reject('invalid_amount');}
+    if(!email){alert('Please enter your email address.');return Promise.reject('no_email');}
+    var successBase=window.location.href.split('?')[0];
+    return fetch(apiBase+'/api/landing-pages/public/'+slug+'/payment/checkout',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,name:customerName,amountCents:amountCents,productName:productName,productDescription:productDescription,quantity:quantity,successUrl:successBase+'?payment=success&product='+encodeURIComponent(productName)+'&session_id={CHECKOUT_SESSION_ID}',cancelUrl:successBase+'?payment=cancelled'})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.checkoutUrl){window.location.href=d.checkoutUrl;}
+      else{alert(d.error||'Failed to process payment');throw new Error(d.error);}
+    });
+  };
+  Object.defineProperty(window,'__processPayment',{value:__realProcessPayment,writable:false,configurable:false});
+  document.addEventListener('DOMContentLoaded',function(){
+    var urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('payment')==='success'){
+      var pName=urlParams.get('product')||'your item';
+      var overlay=document.createElement('div');overlay.id='payment-success-overlay';
+      overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999999;font-family:system-ui,-apple-system,sans-serif;';
+      function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+      var subTxt=successSubtext||('Thank you for purchasing '+pName+'.');
+      overlay.innerHTML='<div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);"><div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2 style="margin:0 0 12px;font-size:24px;font-weight:700;color:#111827;">Payment Successful!</h2><p style="margin:0 0 24px;color:#6b7280;font-size:16px;">'+esc(subTxt)+'</p><button id="lp-pay-success-btn" style="padding:12px 32px;font-size:16px;font-weight:600;background:'+successBtnColor+';color:white;border:none;border-radius:8px;cursor:pointer;">'+esc(successBtnLabel)+'</button></div>';
+      document.body.appendChild(overlay);
+      var pBtn=document.getElementById('lp-pay-success-btn');
+      if(pBtn){pBtn.addEventListener('click',function(){if(successRedirect){window.location.href=successRedirect;}else{overlay.remove();window.history.replaceState({},'',window.location.pathname);}});}
+    }
+  });
+})();
+</script>  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- HEADER with overhanging logo -->
+<header data-section="navbar">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-logo-wrap">
+        <img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/tonypizza.png" alt="Slice the Pizza Guy">
+      </div>
+      <div class="header-brand-text">
+        <strong>Joe's Pizza</strong>
+        <span>Whitesboro, NY</span>
+      </div>
+    </div>
+    <nav>
+      <a href="#menu">Menu</a>
+      <a href="#hours">Hours</a>
+      <a href="#contact">Contact</a>
+      <a href="https://www.joespizzaofwhitesboro.com/" target="_blank" class="btn-order-nav">Order Now</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" data-section="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-checker"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Whitesboro, New York</p>
+    <h1>Joe's<br><span>Pizza</span></h1>
+    <p class="hero-sub">The Real Deal Since Day One</p>
+    <div class="hero-actions">
+      <a href="https://www.joespizzaofwhitesboro.com/" target="_blank" class="btn-primary">🍕 Order Online</a>
+      <a href="#menu" class="btn-outline">View Menu</a>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="specials-banner" data-section="ticker">
+  <div class="specials-ticker">
+    <span>Cheese Pizza $11.45</span>
+    <span>30 Wings + Large Pizza $51.99</span>
+    <span>Tue–Thu Special: Pizza + Antipasto + Soda $27.05</span>
+    <span>Pickup Ready in 15–30 min</span>
+    <span>Call (315) 736-1510</span>
+    <span>Cheese Pizza $11.45</span>
+    <span>30 Wings + Large Pizza $51.99</span>
+    <span>Tue–Thu Special: Pizza + Antipasto + Soda $27.05</span>
+    <span>Pickup Ready in 15–30 min</span>
+    <span>Call (315) 736-1510</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" data-section="about">
+  <div class="about-inner">
+    <div class="about-img">
+      <img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/pizza2.png" alt="Joe's Pizza">
+    </div>
+    <div class="about-text">
+      <h2>Neighborhood<br><span>Favorite</span></h2>
+      <p>Real ingredients. Real flavor. No shortcuts. Joe's Pizza has been feeding Whitesboro with honest, hand-crafted NY-style pies made from scratch every single day.</p>
+      <p>From our classic cheese to loaded specialty pies, every slice tells you we take this seriously.</p>
+      <a href="tel:3157361510" class="btn-primary" style="margin-top:8px;font-size:0.9rem;padding:12px 24px;">📞 (315) 736-1510</a>
+    </div>
+    <div class="about-img2">
+      <img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/pizza3.png" alt="Joe's Pizza Fresh">
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY STRIP -->
+<div class="gallery" data-section="gallery">
+  <div class="gallery-item"><img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/pizza.png" alt="Pizza"></div>
+  <div class="gallery-item"><img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/pizza2.png" alt="Pizza 2"></div>
+  <div class="gallery-item"><img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/pizza3.png" alt="Pizza 3"></div>
+</div>
+
+<!-- MENU -->
+<section class="menu-section" id="menu" data-section="menu">
+  <div class="menu-inner">
+    <div class="section-header">
+      <span class="section-label">What We Make</span>
+      <h2 class="section-title">Our <span>Menu</span></h2>
+      <div class="divider"></div>
+    </div>
+    <div class="menu-tabs">
+      <button class="tab-btn active" onclick="showTab('pizza',this)">🍕 Pizza</button>
+      <button class="tab-btn" onclick="showTab('specials',this)">🔥 Specials</button>
+      <button class="tab-btn" onclick="showTab('fingers',this)">🍗 Finger Foods</button>
+      <button class="tab-btn" onclick="showTab('subs',this)">🥖 Subs</button>
+      <button class="tab-btn" onclick="showTab('salads',this)">🥗 Salads & Pasta</button>
+      <button class="tab-btn" onclick="showTab('drinks',this)">🥤 Drinks</button>
+    </div>
+
+    <div class="menu-panel active" id="panel-pizza">
+      <div class="menu-category-title">Whole Pies</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-name">Cheese Pizza <span class="menu-badge">Best Seller</span></div><div class="menu-item-price">$11.45</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese & Pepperoni <span class="menu-badge">Best Seller</span></div><div class="menu-item-price">$13.00</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese & Mushrooms <span class="menu-badge">Best Seller</span></div><div class="menu-item-price">$13.00</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese & Peppers</div><div class="menu-item-price">$13.00</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese & Anchovies</div><div class="menu-item-price">$13.00</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese & Sausage <span class="menu-badge">Best Seller</span></div><div class="menu-item-price">$13.60</div></div>
+        <div class="menu-item"><div class="menu-item-name">Chicken Wing Pizza</div><div class="menu-item-price">$14.60</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese, Mushrooms & Peppers</div><div class="menu-item-price">$14.60</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese, Sausage & Mushrooms <span class="menu-badge">Best Seller</span></div><div class="menu-item-price">$15.10</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese, Sausage & Peppers</div><div class="menu-item-price">$15.10</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese, Sausage & Pepperoni</div><div class="menu-item-price">$15.10</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese, Peppers, Mushrooms & Anchovies</div><div class="menu-item-price">$16.25</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese, Sausage, Mushrooms & Peppers</div><div class="menu-item-price">$16.65</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese, Sausage, Mushrooms, Peppers & Anchovies</div><div class="menu-item-price">$18.20</div></div>
+        <div class="menu-item"><div class="menu-item-name">Garlic Pizza with Sauce</div><div class="menu-item-price">$11.50</div></div>
+        <div class="menu-item"><div class="menu-item-name">Garlic Pizza with Oil</div><div class="menu-item-price">$11.50</div></div>
+        <div class="menu-item"><div class="menu-item-name">Pizza, Sauce with Grated Cheese</div><div class="menu-item-price">$9.36</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese Pizza Slice (Lunch)</div><div class="menu-item-price">$3.12</div></div>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="panel-specials">
+      <div class="menu-category-title">🔥 Pizza & Wings Combos</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div><div class="menu-item-name">Large Cheese Pizza + 30 Wings</div><div class="menu-item-desc">Best value for groups</div></div><div class="menu-item-price">$51.99</div></div>
+        <div class="menu-item"><div><div class="menu-item-name">Medium Cheese Pizza + 20 Wings</div></div><div class="menu-item-price">$37.49</div></div>
+        <div class="menu-item"><div><div class="menu-item-name">Small Cheese Pizza + 10 Wings</div></div><div class="menu-item-price">$22.99</div></div>
+      </div>
+      <div class="menu-category-title">⏰ Tue / Wed / Thu Special</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div><div class="menu-item-name">Large Cheese Pizza + Small Antipasto + 2L Soda</div><div class="menu-item-desc">Available 11AM–9PM</div></div><div class="menu-item-price">$27.05</div></div>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="panel-fingers">
+      <div class="menu-category-title">Sides & Snacks</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-name">Chicken Wings</div><div class="menu-item-price">$13.55</div></div>
+        <div class="menu-item"><div class="menu-item-name">Chicken Fingers</div><div class="menu-item-price">$9.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Buffalo Fingers</div><div class="menu-item-price">$10.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Boneless Wings</div><div class="menu-item-price">$10.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Cheese Sticks</div><div class="menu-item-price">$8.85</div></div>
+        <div class="menu-item"><div class="menu-item-name">French Fries</div><div class="menu-item-price">$5.20</div></div>
+        <div class="menu-item"><div class="menu-item-name">Onion Rings</div><div class="menu-item-price">$6.75</div></div>
+        <div class="menu-item"><div class="menu-item-name">Garlic Bread with Cheese</div><div class="menu-item-price">$5.20</div></div>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="panel-subs">
+      <div class="menu-category-title">Hot Subs</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-name">Meatball Sub with Cheese</div><div class="menu-item-price">$10.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Sausage Sub with Cheese</div><div class="menu-item-price">$10.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Chicken Parmesan Sub</div><div class="menu-item-price">$10.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Eggplant Sub with Cheese</div><div class="menu-item-price">$10.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Steak Sub</div><div class="menu-item-price">$10.40</div></div>
+        <div class="menu-item"><div class="menu-item-name">Chicken Club Sub</div><div class="menu-item-price">$10.40</div></div>
+      </div>
+      <div class="menu-category-title">Cold Subs <span style="font-size:0.75rem;color:#666;font-weight:400;letter-spacing:1px">— with lettuce & tomatoes</span></div>
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-name">Turkey Sub</div><div class="menu-item-price">$7.30</div></div>
+        <div class="menu-item"><div class="menu-item-name">Salami Sub</div><div class="menu-item-price">$7.30</div></div>
+        <div class="menu-item"><div class="menu-item-name">Mixed Sub</div><div class="menu-item-price">$7.30</div></div>
+        <div class="menu-item"><div class="menu-item-name">Ham Sub</div><div class="menu-item-price">$7.30</div></div>
+        <div class="menu-item"><div class="menu-item-name">Tuna Sub</div><div class="menu-item-price">$7.30</div></div>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="panel-salads">
+      <div class="menu-category-title">Salads</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div><div class="menu-item-name">Antipasto Salad</div><div class="menu-item-desc">Cured meats, fresh cheeses & olives</div></div><div class="menu-item-price">$7.80</div></div>
+        <div class="menu-item"><div class="menu-item-name">Tossed Salad</div><div class="menu-item-price">$6.25</div></div>
+        <div class="menu-item"><div class="menu-item-name">Tossed Salad w/ Chicken</div><div class="menu-item-price">$9.40</div></div>
+      </div>
+      <div class="menu-category-title">Pasta</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div><div class="menu-item-name">Stuffed Shells</div><div class="menu-item-desc">Ricotta stuffed with marinara sauce</div></div><div class="menu-item-price">$7.80</div></div>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="panel-drinks">
+      <div class="menu-category-title">Beverages</div>
+      <div class="menu-grid">
+        <div class="menu-item"><div class="menu-item-name">Soda</div><div class="menu-item-price">$2.60</div></div>
+        <div class="menu-item"><div class="menu-item-name">Minute Maid Pink Lemonade</div><div class="menu-item-price">$2.60</div></div>
+        <div class="menu-item"><div class="menu-item-name">Dasani Water</div><div class="menu-item-price">$2.60</div></div>
+        <div class="menu-item"><div class="menu-item-name">Gold Peak Ice Tea</div><div class="menu-item-price">$2.60</div></div>
+        <div class="menu-item"><div class="menu-item-name">Fresca</div><div class="menu-item-price">$3.75</div></div>
+        <div class="menu-item"><div class="menu-item-name">Minute Maid Strawberry Lemonade</div><div class="menu-item-price">$3.75</div></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:48px;">
+      <a href="https://www.joespizzaofwhitesboro.com/" target="_blank" class="btn-primary">Order Online Now →</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOURS -->
+<section class="hours-section" id="hours" data-section="hours">
+  <div class="hours-inner">
+    <div class="section-header">
+      <span class="section-label">We're Open</span>
+      <h2 class="section-title">Our <span>Hours</span></h2>
+      <div class="divider"></div>
+    </div>
+    <div class="hours-grid">
+      <div class="hours-card">
+        <div class="hours-card-header">🚗 Delivery Hours</div>
+        <div class="hours-row"><span class="day">Monday</span><span class="closed">Closed</span></div>
+        <div class="hours-row"><span class="day">Tuesday</span><span class="time">11:00 AM – 8:30 PM</span></div>
+        <div class="hours-row"><span class="day">Wednesday</span><span class="time">11:00 AM – 8:30 PM</span></div>
+        <div class="hours-row"><span class="day">Thursday</span><span class="time">4:00 PM – 8:30 PM</span></div>
+        <div class="hours-row"><span class="day">Friday</span><span class="time">11:00 AM – 9:30 PM</span></div>
+        <div class="hours-row"><span class="day">Saturday</span><span class="time">11:00 AM – 9:30 PM</span></div>
+        <div class="hours-row"><span class="day">Sunday</span><span class="time">11:00 AM – 8:30 PM</span></div>
+      </div>
+      <div class="hours-card">
+        <div class="hours-card-header">🏪 Pickup Hours</div>
+        <div class="hours-row"><span class="day">Monday</span><span class="closed">Closed</span></div>
+        <div class="hours-row"><span class="day">Tuesday</span><span class="time">11:00 AM – 8:30 PM</span></div>
+        <div class="hours-row"><span class="day">Wednesday</span><span class="time">11:00 AM – 8:30 PM</span></div>
+        <div class="hours-row"><span class="day">Thursday</span><span class="time">11:00 AM – 8:30 PM</span></div>
+        <div class="hours-row"><span class="day">Friday</span><span class="time">11:00 AM – 9:30 PM</span></div>
+        <div class="hours-row"><span class="day">Saturday</span><span class="time">11:00 AM – 9:30 PM</span></div>
+        <div class="hours-row"><span class="day">Sunday</span><span class="time">11:00 AM – 8:30 PM</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER CTA -->
+<section class="cta-section" data-section="cta">
+  <div class="cta-inner">
+    <h2>Ready to <span>Order?</span></h2>
+    <p>Get your favorite pizza delivered hot or swing by for pickup. Fresh made, every time.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://www.joespizzaofwhitesboro.com/" target="_blank" class="btn-primary">🍕 Order Online</a>
+      <a href="tel:3157361510" class="btn-outline">📞 Call to Order</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact" data-section="contact">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-header">
+      <span class="section-label">Find Us</span>
+      <h2 class="section-title">Get In <span>Touch</span></h2>
+      <div class="divider"></div>
+    </div>
+  </div>
+  <div class="contact-inner">
+    <div class="contact-info">
+      <h3>Joe's Pizza</h3>
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div class="contact-item-text">
+          <strong>Address</strong>
+          <a href="https://www.google.com/maps?q=117+Main+St,+Whitesboro,+NY+13492" target="_blank">117 Main St #1205<br>Whitesboro, NY 13492</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div class="contact-item-text"><strong>Phone</strong><a href="tel:3157361510">(315) 736-1510</a></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🌐</div>
+        <div class="contact-item-text"><strong>Order Online</strong><a href="https://www.joespizzaofwhitesboro.com/" target="_blank">joespizzaofwhitesboro.com</a></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">⏰</div>
+        <div class="contact-item-text"><strong>Today</strong><span>Tue–Sun from 11AM · Mon Closed</span></div>
+      </div>
+    </div>
+    <div class="map-embed">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2910.0!2d-75.2905!3d43.1265!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d9450f3a3a3a3a%3A0x9be6f3e9e3e3e3e3!2s117+Main+St%2C+Whitesboro%2C+NY+13492!5e0!3m2!1sen!2sus!4v1234567890" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer data-section="footer">
+  <div class="footer-checker"></div>
+  <div class="footer-logo">
+    <img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/tonypizza.png" alt="Joe's Pizza">
+  </div>
+  <p>© 2026 Joe's Pizza · 117 Main St #1205, Whitesboro, NY 13492 · (315) 736-1510</p>
+  <p style="margin-top:8px;">Made with 🍕 in Whitesboro, NY</p>
+</footer>
+
+<!-- ═══ CHAT BUBBLE ═══ -->
+<div id="chat-bubble" data-section="chat-bubble">
+  <a href="https://offercard.eatdrinklocals.com/index.cfm/1121" target="_blank" id="vip-link" style="display:block; background: linear-gradient(135deg, #d4a017, #c0392b); color:white; font-family:'Oswald',sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:8px 14px; border-radius:20px; text-decoration:none; text-align:center; white-space:nowrap; box-shadow:0 4px 16px rgba(192,57,43,0.4);">⭐ Join Our VIP Club</a>
+  <!-- Welcome tooltip (auto-shows after 1.5s) -->
+  <div id="chat-tooltip" onclick="openChat()">
+    <button id="chat-tooltip-close" onclick="dismissTooltip(event)">✕</button>
+    <p>👋 Hey! I'm <strong>Slice</strong> ask me about the menu, hours, or today's specials!</p>
+  </div>
+  <!-- Big icon button -->
+  <button id="chat-bubble-btn" onclick="toggleChat()" aria-label="Chat with Slice" style="background: transparent !important; border: none !important; box-shadow: none !important; width: 110px; height: 110px; animation:none;">
+    <img src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/tonyschat.png" alt="Slice">
+  </button>
+</div>
+
+
+<!-- CHAT WINDOW -->
+<div id="chat-window" data-section="chat-window">
+  <div class="chat-header">
+    <img class="chat-header-avatar" src="https://krowdimg.b-cdn.net/clients/joes-pizza-whitesboro/tonyschat.png" alt="Slice">
+    <div class="chat-header-info">
+      <strong>Slice</strong>
+      <span><span class="chat-online-dot"></span>Joe's Pizza Assistant</span>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-body">
+    <iframe src="https://paymegpt.com/agents/39856962/embed" title="Tony - Joe's Pizza Assistant" allow="microphone"></iframe>
+  </div>
+  <div style="background:#ffffff; padding:6px 12px; text-align:center; border-top:1px solid #ddd; flex-shrink:0;">
+    <small>
+      <p style="margin:0; font-size:0.7rem; color:#333;">
+        Powered By:
+        <a style="color:#c0392b; text-decoration:none;" target="_blank" href="https://getkrowd.com/">
+          <img src="https://images.getkrowd.com/images/krowd_smlogo.png" alt="Krowd" style="height:16px; vertical-align:middle; margin-left:3px;"> Krowd
+        </a>
+      </p>
+    </small>
+  </div>
+</div>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
