@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://getkrowd-del.github.io/joe-s-pizza-homepage-v2/sitemap.xml
